@@ -1,8 +1,10 @@
 {
   "metadata": {
-    "version": "1.0",
+    "version": "1.1",
     "last_updated": "2025-07-31",
+    "total_restaurants": 8,
     "allergen_guide_reference": "docs-alergenicos-restricoes-alimentares.docx",
+    "cuisine_types": ["Italian", "Chinese", "Japanese", "Mexican", "Indian", "American", "French", "Thai"],
     "emergency_info": {
       "emergency_number": "192",
       "hospitals": [
@@ -404,6 +406,67 @@
         "positive_mentions": ["exceptional food", "romantic atmosphere", "impeccable service"],
         "concerns": ["very expensive", "small portions", "limited parking"]
       }
+    },
+    {
+      "id": "bangkok-sabores",
+      "name": "Bangkok Sabores",
+      "cuisine_type": "Thai",
+      "description": "Autêntico restaurante tailandês com pratos tradicionais picantes e aromáticos. Ingredientes importados diretamente da Tailândia, incluindo ervas frescas e especiarias. Ambiente decorado com arte tailandesa e atmosfera acolhedora.",
+      "rating": 4.6,
+      "price_range": "$",
+      "address": {
+        "street": "Rua Sapucaí, 450",
+        "neighborhood": "Floresta",
+        "city": "Belo Horizonte",
+        "state": "MG",
+        "country": "Brasil",
+        "postal_code": "31110-530"
+      },
+      "contact": {
+        "phone": "(31) 3456-7890",
+        "email": "contato@bangkoksabores.com.br",
+        "instagram": "@bangkoksaboresbh"
+      },
+      "hours": {
+        "monday_sunday": "11:00 - 22:00"
+      },
+      "specialties": [
+        "Pad Thai",
+        "Curry Verde Tailandês",
+        "Tom Yum Goong",
+        "Massaman de Carne",
+        "Mango Sticky Rice"
+      ],
+      "allergen_info": {
+        "common_allergens": ["peanuts", "shellfish", "soy", "gluten", "fish"],
+        "severity_level": "very_high",
+        "gluten_free_options": true,
+        "lactose_free_options": true,
+        "vegan_options": true,
+        "vegetarian_options": true,
+        "cross_contamination_risk": "high",
+        "peanut_allergy_warning": "EXTREME CAUTION: Many dishes contain peanuts or peanut sauce",
+        "safe_dishes_for_celiacs": ["Tom Yum Goong", "All curries", "Mango Sticky Rice"],
+        "safe_dishes_without_peanuts": ["Tom Yum Goong", "Curry Verde", "Peixe com Molho de Tamarindo"],
+        "reference_section": "section_4_thai_cuisine"
+      },
+      "dietary_accommodations": {
+        "peanut_free_preparation": true,
+        "coconut_milk_based": true,
+        "fish_sauce_alternatives": true,
+        "spice_level_adjustable": true,
+        "separate_wok_available": false
+      },
+      "special_warnings": {
+        "peanut_usage": "Peanuts are extensively used in Thai cuisine. Please inform staff of any allergies.",
+        "spice_level": "Thai food can be extremely spicy. Please specify your preferred spice level.",
+        "fish_sauce": "Fish sauce is a common ingredient in many dishes."
+      },
+      "reviews_summary": {
+        "total_reviews": 950,
+        "positive_mentions": ["authentic flavors", "fresh ingredients", "great tom yum", "friendly staff"],
+        "concerns": ["very spicy for some", "strong peanut presence", "limited parking"]
+      }
     }
   ],
   "allergen_legend": {
@@ -454,6 +517,23 @@
     "sulfites": {
       "found_in": ["wines", "dried fruits", "processed foods"],
       "severity": "low"
+    }
+  },
+  "cuisine_specific_warnings": {
+    "thai": {
+      "high_risk_allergens": ["peanuts", "shellfish", "fish"],
+      "common_ingredients": {
+        "fish_sauce": "Used in almost all savory dishes",
+        "peanuts": "Used in pad thai, satay sauce, som tam, massaman curry",
+        "shrimp_paste": "Common in curry pastes",
+        "coconut_milk": "Base for most curries"
+      },
+      "safety_tips": [
+        "Always specify peanut allergy - it's extremely common in Thai cuisine",
+        "Ask about fish sauce in vegetarian dishes",
+        "Request dishes without peanuts when possible",
+        "Be aware that curry pastes often contain shrimp"
+      ]
     }
   }
 }
