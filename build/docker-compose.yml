@@ -1,14 +1,18 @@
-version: '3.8'
-
 services:
   langflow:
-    image: langflowai/langflow:latest
+    # image: langflowai/langflow:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "7860:7860"
     environment:
       - LANGFLOW_DATABASE_URL=sqlite:////app/data/langflow.db
       - LANGFLOW_CONFIG_DIR=/app/data
       - LANGFLOW_LOG_LEVEL=info
+      - LANGFUSE_PUBLIC_KEY=pk-lf-98760dc7-76d9-4fc0-81be-d87e8c915e03
+      - LANGFUSE_SECRET_KEY=sk-lf-9503bcfa-85e2-4901-8f2b-bc4976c373f4
+      - LANGFUSE_HOST=https://us.cloud.langfuse.com
     volumes:
       - ./data:/app/data
     command: langflow run --host 0.0.0.0 --port 7860

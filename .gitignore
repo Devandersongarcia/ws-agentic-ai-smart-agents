@@ -177,3 +177,5 @@ outputs/
 results/
 generated/
 exports/
+
+build/data/
