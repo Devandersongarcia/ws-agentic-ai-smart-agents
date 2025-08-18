@@ -1,11 +1,12 @@
 """Unified indexing module supporting single and multi-collection vector database storage with Astra DB and document optimization"""
 
 from typing import List, Dict, Any, Optional, Union
-from llama_index.core import VectorStoreIndex, StorageContext, Settings
+from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.core import Document
 from llama_index.vector_stores.astra_db import AstraDBVectorStore
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core.ingestion import IngestionPipeline
+from llama_index.core.callbacks import CallbackManager
 from tenacity import retry, stop_after_attempt, wait_exponential
 try:
     from . import config
@@ -18,7 +19,8 @@ class UnifiedIndexer:
         self,
         mode: str = "multi",
         embedding_model: str = config.EMBEDDING_MODEL,
-        embedding_dim: int = config.EMBEDDING_DIMENSION
+        embedding_dim: int = config.EMBEDDING_DIMENSION,
+        callback_manager: Optional[CallbackManager] = None
     ):
         """Initialize indexer with single or multi-collection configuration."""
         self.mode = mode
@@ -27,6 +29,7 @@ class UnifiedIndexer:
         self.embed_model = None
         self.collections = {}
         self.indexes = {}
+        self.callback_manager = callback_manager
         
         if mode == "multi":
             self.collection_configs = {
@@ -63,8 +66,6 @@ class UnifiedIndexer:
             api_key=config.OPENAI_API_KEY,
             embed_batch_size=10
         )
-        
-        Settings.embed_model = self.embed_model
         
         if self.mode == "single":
             self._setup_single_collection()
@@ -262,6 +263,8 @@ class UnifiedIndexer:
         self.indexes['main'] = VectorStoreIndex.from_documents(
             documents,
             storage_context=collection_data["storage_context"],
+            embed_model=self.embed_model,
+            callback_manager=self.callback_manager,
             show_progress=True
         )
         
@@ -291,6 +294,7 @@ class UnifiedIndexer:
                     documents,
                     storage_context=collection_data["storage_context"],
                     embed_model=self.embed_model,
+                    callback_manager=self.callback_manager,
                     show_progress=True
                 )
                 
@@ -343,8 +347,8 @@ class UnifiedIndexer:
             vector_store=vector_store
         )
 
-def create_indexer(mode: str = "multi") -> UnifiedIndexer:
+def create_indexer(mode: str = "multi", callback_manager: Optional[CallbackManager] = None) -> UnifiedIndexer:
     """Create and configure unified indexer with specified mode."""
-    indexer = UnifiedIndexer(mode=mode)
+    indexer = UnifiedIndexer(mode=mode, callback_manager=callback_manager)
     indexer.setup()
     return indexer

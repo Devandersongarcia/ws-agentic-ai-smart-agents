@@ -10,14 +10,14 @@ try:
     from .transformer import create_transformation_pipeline
     from .chunking import create_chunking_pipeline
     from .indexer import create_indexer
-    from .quality import create_tracer
+    from .quality import create_tracer, get_callback_manager
     from . import config
 except ImportError:
     from ingestion import DocumentIngestor
     from transformer import create_transformation_pipeline
     from chunking import create_chunking_pipeline
     from indexer import create_indexer
-    from quality import create_tracer
+    from quality import create_tracer, get_callback_manager
     import config
 
 class RAGPreprocessor:
@@ -130,7 +130,8 @@ class RAGPreprocessor:
     
     def _run_indexing(self) -> Dict[str, Any]:
         """Index documents to Astra DB vector collections."""
-        self.indexer = create_indexer(mode=self.mode)
+        callback_manager = get_callback_manager(self.tracer) if self.tracer else None
+        self.indexer = create_indexer(mode=self.mode, callback_manager=callback_manager)
         
         if self.tracer:
             self.tracer.trace_step("indexing_start", len(self.chunks), None)

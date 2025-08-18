@@ -187,8 +187,16 @@ class DocumentTransformer(TransformComponent):
         """Add detailed attributes to parsed menu items."""
         if "menu_items" in doc.metadata:
             dishes = []
+
+            menu_items = doc.metadata["menu_items"]
+            if isinstance(menu_items, str):
+                import ast
+                try:
+                    menu_items = ast.literal_eval(menu_items)
+                except:
+                    return
             
-            for item in doc.metadata["menu_items"]:
+            for item in menu_items:
                 dish_info = {
                     "name": item["name"],
                     "price": item["price"]

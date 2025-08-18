@@ -4,7 +4,8 @@ from typing import List, Optional
 from llama_index.core import Document
 from llama_index.core.node_parser import (
     SemanticSplitterNodeParser,
-    SentenceSplitter
+    SentenceSplitter,
+    SentenceWindowNodeParser
 )
 from llama_index.embeddings.openai import OpenAIEmbedding
 try:
@@ -31,9 +32,11 @@ class SmartChunker:
                 api_key=config.OPENAI_API_KEY
             )
             self.splitter = SemanticSplitterNodeParser(
+                embed_model=self.embed_model,
                 buffer_size=1,
                 breakpoint_percentile_threshold=95,
-                embed_model=self.embed_model
+                include_metadata=True,
+                include_prev_next_rel=True
             )
         else:
             self.splitter = SentenceSplitter(

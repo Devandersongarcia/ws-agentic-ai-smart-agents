@@ -17,7 +17,7 @@ End-to-end RAG preprocessing pipeline for restaurant data using LlamaIndex with 
 
 1. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt --upgrade
 ```
 
 2. Configure environment variables:

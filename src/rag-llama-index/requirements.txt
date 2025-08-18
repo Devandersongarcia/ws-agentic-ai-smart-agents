@@ -1,8 +1,9 @@
-llama-index>=0.11.0
-llama-index-vector-stores-astra-db
-llama-index-embeddings-openai
-llama-index-readers-file
-llama-index-callbacks-langfuse
+llama-index>=0.13.2
+llama-index-core>=0.13.2
+llama-index-vector-stores-astra-db>=0.3.0
+llama-index-embeddings-openai>=0.3.0
+llama-index-readers-file>=0.3.0
+llama-index-callbacks-langfuse>=0.3.0
 astrapy>=1.5.0
 openai>=1.0.0
 python-dotenv

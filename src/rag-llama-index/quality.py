@@ -4,7 +4,9 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 import json
 from pathlib import Path
-from llama_index.core import set_global_handler, VectorStoreIndex
+from llama_index.core import VectorStoreIndex
+from llama_index.core.callbacks import CallbackManager
+from llama_index.callbacks.langfuse import langfuse_callback_handler
 from llama_index.core import Document
 import config
 
@@ -179,6 +181,7 @@ class PipelineTracer:
         """Initialize pipeline tracer with optional Langfuse integration."""
         self.traces = []
         self.enable_langfuse = enable_langfuse
+        self.callback_manager = None
         
         if enable_langfuse and config.LANGFUSE_SECRET_KEY:
             self.setup_langfuse()
@@ -186,12 +189,12 @@ class PipelineTracer:
     def setup_langfuse(self):
         """Configure Langfuse for pipeline observability."""
         try:
-            set_global_handler(
-                "langfuse",
+            handler = langfuse_callback_handler(
                 secret_key=config.LANGFUSE_SECRET_KEY,
                 public_key=config.LANGFUSE_PUBLIC_KEY,
                 host=config.LANGFUSE_HOST
             )
+            self.callback_manager = CallbackManager([handler])
             print("Langfuse tracing enabled")
         except Exception as e:
             print(f"Failed to setup Langfuse: {e}")
@@ -273,3 +276,9 @@ def create_qa_suite(index: VectorStoreIndex) -> QualityAssurance:
 def create_tracer(enable_langfuse: bool = True) -> PipelineTracer:
     """Create pipeline tracer with optional Langfuse observability."""
     return PipelineTracer(enable_langfuse)
+
+def get_callback_manager(tracer: Optional[PipelineTracer] = None) -> Optional[CallbackManager]:
+    """Get callback manager from tracer if available."""
+    if tracer and tracer.callback_manager:
+        return tracer.callback_manager
+    return None
