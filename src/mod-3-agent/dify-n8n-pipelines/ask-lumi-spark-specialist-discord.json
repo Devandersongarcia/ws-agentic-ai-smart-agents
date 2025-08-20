@@ -1,0 +1,236 @@
+{
+  "name": "ask-lumi-spark-specialist-discord",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1331966296295735376",
+          "mode": "list",
+          "cachedResultName": "OwsHQ",
+          "cachedResultUrl": "https://discord.com/channels/1331966296295735376"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1397305893946789949",
+          "mode": "list",
+          "cachedResultName": "ask-lumi",
+          "cachedResultUrl": "https://discord.com/channels/1331966296295735376/1397305893946789949"
+        },
+        "content": "={{ $json.answer }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -448
+      ],
+      "id": "fd8d671b-42fc-4eca-b6cf-fce77b0246e8",
+      "name": "Send a message",
+      "webhookId": "77b5187c-c91c-4007-8e8a-4ab454c96900",
+      "credentials": {
+        "discordBotApi": {
+          "id": "7hRO8cz408XkxYlw",
+          "name": "discord-bot-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "guildIds": [
+          "1331966296295735376"
+        ],
+        "channelIds": [
+          "1397305893946789949"
+        ],
+        "pattern": "botMention",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-discord-trigger.discordTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        -544
+      ],
+      "id": "3d7e0915-3b52-4b64-a162-889844bfccb1",
+      "name": "Discord trigger",
+      "credentials": {
+        "discordBotTriggerApi": {
+          "id": "NRqK9bxVjCpmyhzl",
+          "name": "discord-bot-trigger-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dify.ai/v1/chat-messages",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer app-fpl6is3qlqOUmbtlEABFQRxR\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"inputs\": {},\n  \"query\": \"{{ $json.cleanContent }}\",\n  \"response_mode\": \"blocking\",\n  \"user\": \"{{ $json.authorId }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        -448
+      ],
+      "id": "3e5fa62e-fb57-4b38-a284-a49cd393bbb6",
+      "name": "Dify Ask Lumi Spark Specialist Agent",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "065ee8bc-71f5-4615-9d75-971753e51203",
+              "name": "cleanContent",
+              "value": "={{ $json.content.replace(/<@!?\\d+>/g, '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "4a27e030-4ce2-4089-8899-4eb5d5fa8bb7",
+              "name": "channelId",
+              "value": "={{ $json.channelId }}",
+              "type": "string"
+            },
+            {
+              "id": "f12d8a57-d1f8-4be3-aa58-0ad3706228dc",
+              "name": "authorId",
+              "value": "={{ $json.authorId }}",
+              "type": "string"
+            },
+            {
+              "id": "181902fd-060b-4038-9b79-6b2e68bda041",
+              "name": "startTime",
+              "value": "={{ Date.now() }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        -544
+      ],
+      "id": "3e3894e5-265f-45c2-87dd-b93d81240636",
+      "name": "Input fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all()[0].json;\nconst inputFields = $('Input fields').all()[0].json;\n\nlet finalAnswer = input.answer || 'No response from Dify';\nconst channelId = inputFields.channelId;\nconst maxLength = 1900;\nconst messages = [];\n\nconst startTime = $('Input fields').item.json.startTime;\nconst processingTime = ((Date.now() - startTime) / 1000).toFixed(1);\nconst footer = `\\n\\n━━━━━━━━━━\\n⏱️ ${processingTime}s`;\n\nfunction findSafeSplitPoint(text, maxLen) {\n const codeBlockRegex = /```[\\s\\S]*?```/g;\n const codeBlocks = [];\n let match;\n \n while ((match = codeBlockRegex.exec(text)) !== null) {\n   codeBlocks.push({ start: match.index, end: match.index + match[0].length });\n }\n \n if (text.length <= maxLen) return text.length;\n \n function isInsideCodeBlock(pos) {\n   return codeBlocks.some(block => pos >= block.start && pos <= block.end);\n }\n \n for (let i = maxLen; i > maxLen * 0.5; i--) {\n   if (!isInsideCodeBlock(i)) {\n     if (text.substring(i-2, i+2).includes('\\n\\n')) {\n       return i;\n     }\n   }\n }\n \n for (const block of codeBlocks) {\n   if (block.start < maxLen && block.end > maxLen) {\n     return block.end + 1;\n   }\n }\n \n for (let i = maxLen; i > 0; i--) {\n   if (text[i] === '\\n' && !isInsideCodeBlock(i)) {\n     return i;\n   }\n }\n \n return maxLen;\n}\n\nif (finalAnswer.length > maxLength) {\n const chunks = [];\n let remaining = finalAnswer;\n \n while (remaining.length > 0) {\n   if (remaining.length <= maxLength) {\n     chunks.push(remaining);\n     break;\n   }\n   \n   const splitPoint = findSafeSplitPoint(remaining, maxLength);\n   chunks.push(remaining.substring(0, splitPoint).trim());\n   remaining = remaining.substring(splitPoint).trim();\n }\n \n chunks.forEach((chunk, index) => {\n   const isLast = index === chunks.length - 1;\n   messages.push({\n     json: {\n       answer: isLast ? chunk + footer : chunk + '\\n\\n*[continua...]*',\n       channelId: channelId,\n       cached: input.cached || false,\n       messageIndex: index,\n       totalMessages: chunks.length\n     }\n   });\n });\n} else {\n messages.push({\n   json: {\n     answer: finalAnswer + footer,\n     channelId: channelId,\n     cached: input.cached || false,\n     messageIndex: 0,\n     totalMessages: 1\n   }\n });\n}\n\nreturn messages;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        -448
+      ],
+      "id": "e30d9423-6da0-462b-8da4-612595fbe162",
+      "name": "Output fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://discord.com/api/v10/channels/{{ $json.channelId }}/typing",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "discordBotApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        -640
+      ],
+      "id": "d3c17371-2c6e-48e4-93b1-97714ccf7157",
+      "name": "Bot first typing",
+      "credentials": {
+        "discordBotApi": {
+          "id": "7hRO8cz408XkxYlw",
+          "name": "discord-bot-account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Discord trigger": {
+      "main": [
+        [
+          {
+            "node": "Input fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dify Ask Lumi Spark Specialist Agent": {
+      "main": [
+        [
+          {
+            "node": "Output fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input fields": {
+      "main": [
+        [
+          {
+            "node": "Bot first typing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dify Ask Lumi Spark Specialist Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bot first typing": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d1bfefee-6296-4b20-b855-2f1929e9bcd7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ee1f22daa8c12c1e5513be63d0355a90e4975179dd1d449c8a2bfbea9b794b22"
+  },
+  "id": "tAvmMhjdvOUoO4vz",
+  "tags": []
+}

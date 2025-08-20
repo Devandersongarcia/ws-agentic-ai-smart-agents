@@ -1,11 +1,10 @@
 """Intelligent chunking module for splitting restaurant menu documents into semantically meaningful chunks with menu-aware logic"""
 
-from typing import List, Optional
+from typing import List
 from llama_index.core import Document
 from llama_index.core.node_parser import (
     SemanticSplitterNodeParser,
-    SentenceSplitter,
-    SentenceWindowNodeParser
+    SentenceSplitter
 )
 from llama_index.embeddings.openai import OpenAIEmbedding
 try:
