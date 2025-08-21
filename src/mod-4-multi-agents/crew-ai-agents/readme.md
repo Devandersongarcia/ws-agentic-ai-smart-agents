@@ -1,244 +1,198 @@
-# Restaurant Recommendation Multi-Agent System
+# 🍽️ CrewAI Restaurant Recommendation System
 
-A sophisticated multi-agent system built with CrewAI for intelligent restaurant recommendations, featuring advanced document processing with Docling, vector search with Supabase, and comprehensive observability through Langfuse.
+A demonstration of CrewAI's multi-agent collaboration using only built-in tools. This system showcases how specialized AI agents work together autonomously to provide comprehensive restaurant recommendations through sequential task execution.
 
-## 🎯 Purpose
+## 🎯 Overview
 
-This system orchestrates three specialized AI agents to provide personalized restaurant recommendations while ensuring dietary safety and optimizing for available promotions. The agents collaborate to analyze customer preferences, validate allergen information, and find the best deals.
-
-## 🏗️ Architecture
-
-```mermaid
-graph TB
-    U[User Request] --> RC[Restaurant Concierge]
-    RC --> DS[Dietary Specialist]
-    RC --> PM[Promotions Manager]
-    
-    DS --> VS[(Supabase Vector Store)]
-    PM --> VS
-    RC --> VS
-    
-    VS --> D1[Menus Collection]
-    VS --> D2[Restaurants Collection]
-    VS --> D3[Coupons Collection]
-    VS --> D4[Allergens Collection]
-    
-    RC --> R[Recommendation]
-    DS --> R
-    PM --> R
-    
-    L[Langfuse] -.-> RC
-    L -.-> DS
-    L -.-> PM
-```
+This system demonstrates advanced multi-agent collaboration using CrewAI framework. Three specialized agents work together to analyze customer preferences, ensure dietary safety, find the best deals, and create personalized restaurant recommendations.
 
 ## 🤖 Agents
 
-### Restaurant Concierge Agent
-- **Role**: Customer-facing recommendation specialist
-- **Capabilities**: Natural language understanding, multi-criteria search, personalization
-- **Tools**: RestaurantSearchTool, SimilaritySearchTool
+### 1. Restaurant Concierge
+- **Role**: Restaurant Recommendation Specialist
+- **Expertise**: 15+ years hospitality industry experience
+- **Responsibilities**: Find perfect restaurants matching customer preferences
+- **Tools**: Restaurant database search, file reading
 
-### Dietary Safety Specialist
-- **Role**: Health and allergen management expert
-- **Capabilities**: Allergen cross-reference, dietary validation, safety scoring
-- **Tools**: AllergenCheckerTool, MenuAnalyzerTool
+### 2. Dietary Specialist  
+- **Role**: Food Safety and Dietary Expert
+- **Expertise**: Certified nutritionist with allergen management specialization
+- **Responsibilities**: Ensure recommendations are safe for dietary restrictions
+- **Tools**: Restaurant analysis, allergy guidelines, safety protocols
 
-### Promotions Manager
-- **Role**: Deal optimization and budget management
-- **Capabilities**: Active promotion matching, budget-aware recommendations, temporal validation
-- **Tools**: CouponFinderTool, PriceOptimizerTool
+### 3. Promotions Manager
+- **Role**: Deals and Promotions Specialist
+- **Expertise**: Industry connections and promotional offers knowledge
+- **Responsibilities**: Find best available deals and calculate savings
+- **Tools**: Coupons database, promotional offers analysis
+
+## 📋 Tasks Workflow
+
+1. **Restaurant Search**: Find 3-5 restaurants matching customer criteria
+2. **Dietary Safety Check**: Analyze recommendations for allergen safety
+3. **Promotions Search**: Discover available deals and discounts  
+4. **Final Recommendation**: Synthesize all information into actionable guide
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────┐
+│              Customer Input             │
+│     (preferences, allergies, budget)    │
+└─────────────┬───────────────────────────┘
+              │
+┌─────────────▼───────────────────────────┐
+│         Restaurant Concierge            │
+│    🔍 Searches restaurant database      │
+│    📝 Finds 3-5 matching venues        │
+└─────────────┬───────────────────────────┘
+              │
+    ┌─────────▼─────────┐    ┌─────────────────┐
+    │ Dietary Specialist │    │ Promotions Mgr  │
+    │ ⚠️  Safety analysis │    │ 💰 Deals finder  │
+    │ 🥗 Allergen check  │    │ 🎟️  Savings calc │
+    └─────────┬─────────┘    └─────────┬───────┘
+              │                        │
+              └─────────┬──────────────┘
+                        │
+           ┌─────────────▼───────────────┐
+           │     Final Recommendation    │
+           │   📊 Ranked suggestions     │
+           │   📋 Complete dining guide  │
+           │   ✅ Actionable next steps  │
+           └─────────────────────────────┘
+```
+
+## 🛠️ Technology Stack
+
+- **CrewAI**: Multi-agent orchestration framework
+- **OpenAI GPT-4o-mini**: Large language model for agents
+- **YAML Configuration**: Declarative agent and task definitions
+- **Built-in Tools**: File reading, JSON/CSV/DOCX search capabilities
+- **Rich Console**: Beautiful terminal interface
+- **Pydantic**: Data validation and settings management
+
+## 📊 Data Sources
+
+- **Restaurants Database**: `storage/json/restaurants.json` (8 restaurants with detailed info)
+- **Promotional Offers**: `storage/csv/coupons_2025-07-31.csv` (65+ current deals)
+- **Allergy Guidelines**: `storage/doc/allergy.docx` (Safety protocols)
+- **Menu PDFs**: `storage/pdf/` (8 cuisine type menus)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- **Python 3.10, 3.11, or 3.12** (Python 3.13 not yet supported by CrewAI)
-- Supabase account with pgvector enabled
+- Python 3.10-3.12
 - OpenAI API key
-- Langfuse account (for observability)
 
 ### Installation
 
-1. Clone and navigate to the project:
-```bash
-cd src/mod-4-multi-agents/crew-ai-agents
-```
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-2. Create virtual environment (ensure Python 3.10-3.12):
-```bash
-python3.11 -m venv venv  
-source venv/bin/activate 
-```
+2. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your OPENAI_API_KEY
+   ```
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+3. **Run the system**:
+   ```bash
+   python main.py
+   ```
 
-**Note**: If you encounter installation issues:
-- Ensure Python version is between 3.10 and 3.12
-- On Windows, install Visual Studio Build Tools with C++ support
-- Try: `pip install --upgrade pip setuptools wheel` before installing requirements
+### Interactive Usage
 
-4. Configure environment:
-```bash
-cp .env.example .env
-```
-
-5. Set up database:
-```bash
-python scripts/setup_database.py
-```
-
-6. Ingest data:
-```bash
-python scripts/ingest_data.py
-```
-
-### Basic Usage
-
-```python
-from crews.restaurant_crew import RestaurantCrew
-from langfuse import Langfuse
-
-crew = RestaurantCrew()
-
-result = crew.recommend(
-    query="I need a nut-free Italian restaurant with good deals",
-    location="downtown",
-    budget=30
-)
-
-print(result.recommendation)
-```
-
-## 📂 Project Structure
-
-```
-crew-ai-agents/
-├── config/           # Configuration files and settings
-├── ingestion/        # Docling-based document processing pipeline
-├── database/         # Database models and migrations
-├── agents/           # AI agent implementations
-├── tools/            # Agent tools and utilities
-├── crews/            # Crew orchestration logic
-├── flows/            # Complex workflow patterns
-├── observability/    # Monitoring and tracing
-├── tests/            # Test suites
-├── scripts/          # Utility scripts
-└── examples/         # Usage examples
-```
+The system will prompt you for:
+- Cuisine preferences
+- Budget range
+- Location and party size
+- Occasion type
+- Allergies and dietary restrictions
+- Preferred dining time
 
 ## 🧪 Testing
 
-Run all tests:
+Test the crew directly:
 ```bash
-pytest
+python crew.py
 ```
 
-Run with coverage:
-```bash
-pytest --cov=. --cov-report=html
+This runs with sample customer data to verify all agents are working correctly.
+
+## 📁 Project Structure
+
+```
+crew-ai-agents/
+├── config/
+│   ├── agents.yaml          # Agent definitions
+│   └── tasks.yaml           # Task configurations
+├── storage/                 # Data sources
+│   ├── json/restaurants.json
+│   ├── csv/coupons_2025-07-31.csv
+│   ├── doc/allergy.docx
+│   └── pdf/[menu files]
+├── crew.py                  # Main crew implementation
+├── main.py                  # Interactive entry point
+├── requirements.txt         # Dependencies
+├── .env                     # Environment configuration
+└── README.md               # This file
 ```
 
-Run specific test suite:
-```bash
-pytest tests/unit/test_agents.py -v
-```
+## 🎓 Workshop Demo (15 minutes)
 
-## 🚀 Data Pipeline
+### Part 1: Architecture Overview (5 min)
+1. Explain multi-agent collaboration concept
+2. Show YAML configuration approach
+3. Demonstrate agent specialization and delegation
 
-### Ingestion Flow
-1. **Document Processing**: Docling extracts structured data from PDFs, JSON, CSV, and DOCX files
-2. **Embedding Generation**: OpenAI creates vector embeddings for semantic search
-3. **Vector Storage**: Supabase stores embeddings with metadata for hybrid search
-4. **Index Creation**: pgvector indexes optimize query performance
+### Part 2: Live Demonstration (7 min)
+1. Run `python main.py`
+2. Input sample customer requirements
+3. Show agents working collaboratively
+4. Highlight final recommendation output
 
-### Supported Formats
-- **PDF**: Restaurant menus with table preservation
-- **JSON**: Restaurant metadata and attributes
-- **CSV**: Coupon and promotion data
-- **DOCX**: Allergen guidelines and policies
+### Part 3: Key Takeaways (3 min)
+1. CrewAI's decorator pattern (@CrewBase, @agent, @task)
+2. YAML-driven configuration for maintainability
+3. Built-in tools vs custom RAG implementation
+4. Memory and planning capabilities
 
-## 🔍 Observability
+## 🔧 Configuration
 
-### Langfuse Integration
-- Real-time agent interaction tracing
-- Token usage and cost tracking
-- Decision path visualization
-- Performance metrics dashboard
+### Environment Variables
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `OPENAI_MODEL_NAME`: Model to use (default: gpt-4o-mini)
+- `OPENAI_TEMPERATURE`: Creativity level (default: 0.7)
+- `CREWAI_TELEMETRY_ENABLED`: Telemetry setting (default: false)
 
-### Key Metrics
-- Response latency
-- Token consumption per agent
-- Recommendation accuracy
-- User satisfaction scores
+### Customization
+- Modify `config/agents.yaml` to adjust agent behavior
+- Update `config/tasks.yaml` to change task requirements
+- Add new tools in `crew.py` for additional data sources
 
-## 🛠️ Development
+## 📈 Features Demonstrated
 
-### Code Style
-- Black for formatting
-- Ruff for linting
-- MyPy for type checking
-- Docstrings for all public methods
-
-### Pre-commit Hooks
-```bash
-pre-commit install
-pre-commit run --all-files
-```
-
-### Adding New Agents
-1. Extend `BaseAgent` class
-2. Define role, goal, and backstory
-3. Implement required tools
-4. Add to crew configuration
-5. Create tests
-
-## 🚀 Deployment
-
-### Local Development
-```bash
-python main.py
-```
-
-### Docker (Coming Soon)
-```bash
-docker-compose up
-```
-
-### Production Considerations
-- Use environment-specific .env files
-- Enable rate limiting
-- Configure caching
-- Set up monitoring alerts
-
-## 🤖 Performance
-
-### Benchmarks
-- Ingestion: ~100 documents/minute
-- Vector search: <100ms p95 latency
-- Agent response: 2-5 seconds average
-- Concurrent users: 50+ supported
-
-### Optimization Tips
-- Enable caching for frequent queries
-- Use batch processing for ingestion
-- Implement connection pooling
-- Monitor token usage
+- **Multi-Agent Collaboration**: Agents delegate and share context
+- **Sequential Processing**: Tasks build upon previous results  
+- **Memory Systems**: Agents remember context across tasks
+- **Planning**: CrewAI automatically plans execution strategy
+- **Built-in Tools**: Leverage existing tools vs building custom ones
+- **YAML Configuration**: Separate logic from configuration
+- **Rich Output**: Formatted terminal interface
+- **File Generation**: Automatic report creation
 
 ## 🤝 Contributing
 
-1. Create feature branch
-2. Add tests for new functionality
-3. Ensure all tests pass
-4. Update documentation
-5. Submit pull request
+This is a workshop demonstration project. For production use:
+1. Add comprehensive error handling
+2. Implement caching mechanisms
+3. Add more sophisticated tools
+4. Include real-time data sources
+5. Add monitoring and observability
 
-## 🔗 Resources
+## 📄 License
 
-- [CrewAI Documentation](https://docs.crewai.com)
-- [Supabase Vector Guide](https://supabase.com/docs/guides/ai)
-- [Docling Documentation](https://github.com/DS4SD/docling)
-- [Langfuse Documentation](https://langfuse.com/docs)
+MIT License - Educational workshop purposes.

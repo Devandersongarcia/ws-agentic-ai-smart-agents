@@ -1,0 +1,104 @@
+restaurant_search:
+  description: >
+    Search for restaurants that match the customer's requirements:
+    
+    Customer Preferences:
+    - Cuisine Type: {cuisine_type}
+    - Budget Range: {budget}
+    - Location: {location}
+    - Party Size: {party_size}
+    - Occasion: {occasion}
+    
+    Your task:
+    1. Use FileReadTool to read storage/json/restaurants.json
+    2. Analyze the JSON content to find restaurants matching the cuisine type
+    3. Select 2-3 restaurants that best match the customer's preferences
+    4. For each selected restaurant, note:
+       - Name and cuisine type
+       - Price range and location
+       - Rating and specialties
+       - Operating hours
+       - Why it matches the customer's needs
+    
+    Focus on restaurants that truly fit the customer's requirements.
+  
+  expected_output: >
+    A list of 2-3 restaurant recommendations with details about each venue,
+    explaining why they match the customer's preferences.
+
+dietary_safety_check:
+  description: >
+    Analyze the restaurant recommendations for dietary safety:
+    
+    Customer Dietary Information:
+    - Allergies: {allergens}
+    - Dietary restrictions: {dietary_restrictions}
+    - Medical conditions: {medical_conditions}
+    
+    Your task:
+    1. Review the restaurants recommended in the previous task
+    2. Use FileReadTool to check storage/json/restaurants.json for allergen information
+    3. For each restaurant, assess:
+       - Common allergens present
+       - Vegetarian/vegan options availability
+       - Cross-contamination risks
+       - Safety rating (SAFE/CAUTION/AVOID)
+    4. Provide specific menu recommendations when possible
+    
+    Customer safety is the absolute priority.
+  
+  expected_output: >
+    A safety assessment for each recommended restaurant, including allergen warnings,
+    safe menu options, and dietary compatibility notes.
+
+promotions_search:
+  description: >
+    Find available deals and promotions:
+    
+    Customer Information:
+    - Budget: {budget}
+    - Party Size: {party_size}
+    - Dining Time: {dining_time}
+    
+    Your task:
+    1. Use FileReadTool to read storage/csv/coupons_2025-07-31.csv
+    2. Identify active promotions and discounts
+    3. Find deals that could apply to the customer's dining plans
+    4. For each relevant promotion:
+       - Promotion code and description
+       - Discount amount or percentage
+       - Validity period
+       - How to claim it
+    5. Calculate potential savings
+    
+    Help the customer get the best value.
+  
+  expected_output: >
+    A list of applicable promotions with codes, discount amounts,
+    and clear instructions on how to use them.
+
+final_recommendation:
+  description: >
+    Create the ultimate dining guide by combining all information:
+    
+    Based on all previous analyses, provide:
+    
+    1. **Top Restaurant Choice**: The #1 recommendation with reasoning
+    
+    2. **Complete Dining Plan**:
+       - Restaurant name and location
+       - Best dishes to order (considering dietary needs)
+       - Available promotions to use
+       - Reservation recommendations
+       - Total estimated cost with discounts
+    
+    3. **Alternative Options**: Brief mention of other suitable restaurants
+    
+    4. **Important Notes**: Any safety warnings or special considerations
+    
+    Make this a complete, actionable guide for the customer's dining experience.
+  
+  expected_output: >
+    A comprehensive, well-organized dining guide with the top recommendation,
+    all necessary details, safety notes, available deals, and clear next steps
+    for a perfect dining experience.
